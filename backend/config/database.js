@@ -1,4 +1,6 @@
-const { Pool } = require('pg');
+const { Pool } = require('pg'); // Import pg Pool for PostgreSQL connection 
+// pg lets Node.js applications interact with PostgreSQL databases
+// Excecute SQL queries and manage database connections
 
 const pool = new Pool({
   user: process.env.DB_USER,

@@ -1,15 +1,20 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+require('dotenv').config(); // Load environment variables from .env file
+const express = require('express'); // Import Express framework -> API server
+const cors = require('cors'); // Import CORS middleware for React frontend
 const pool = require('./config/database');
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+//Routes
+const userRoutes = require('./routes/userRoutes');
 
+const app = express();
+const PORT = process.env.PORT || 3000; 
+
+
+//Middleware
 app.use(cors());
 app.use(express.json());
 
-// Test route
+// API test route
 app.get('/', (req, res) => {
   res.json({ message: 'Blip API is running!' });
 });
@@ -32,6 +37,9 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+// User Routes
+app.use('/api/users', userRoutes);
+
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
