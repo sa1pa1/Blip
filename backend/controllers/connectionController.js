@@ -1,7 +1,6 @@
 const Connection = require("../models/Connections");
-const { use } = require("../routes/userRoutes");
 
-//SEND FRIEND REQUEST
+// SEND FRIEND REQUEST
 exports.friendRequest = async (req, res) => {
   const { userId, newConnectionId } = req.body;
 
@@ -34,7 +33,7 @@ exports.friendRequest = async (req, res) => {
   }
 };
 
-//ACCEPT FRIEND REQUEST
+// ACCEPT FRIEND REQUEST
 exports.acceptRequest = async (req, res) => {
   const { connectionId } = req.params;
 
@@ -46,7 +45,7 @@ exports.acceptRequest = async (req, res) => {
     const connection = await Connection.acceptRequest(connectionId);
 
     res.status(200).json({
-      message: "Friend request accepted successfully",
+      message: "Friend request accepted successfully. Bidirectional connection created.",
       connection,
     });
   } catch (error) {
@@ -55,7 +54,7 @@ exports.acceptRequest = async (req, res) => {
   }
 };
 
-//GET ALL FRIENDS
+// GET ALL FRIENDS
 exports.getFriends = async (req, res) => {
   const { userId } = req.params;
 
@@ -64,6 +63,7 @@ exports.getFriends = async (req, res) => {
 
     res.status(200).json({
       message: "Friends retrieved successfully",
+      count: friends.length,
       friends,
     });
   } catch (error) {
@@ -72,21 +72,20 @@ exports.getFriends = async (req, res) => {
   }
 };
 
-//GET PENDING REQUESTS
-exports.getPenndingRequests = async (req, res) => {
-    const { userId } = req.params;
+// GET PENDING REQUESTS
+exports.getPendingRequests = async (req, res) => {
+  const { userId } = req.params;
 
-    try {
-        const pendingRequests = await Connection.getPendingRequests(userId);
+  try {
+    const pendingRequests = await Connection.getPendingRequests(userId);
 
-        res.status(200).json({
-            message: "Pending requests retrieved successfully",
-            pendingRequests,
-        }); 
-            
-    } catch (error) {
-        console.error("Error retrieving pending requests:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
+    res.status(200).json({
+      message: "Pending requests retrieved successfully",
+      count: pendingRequests.length,
+      pendingRequests,
+    });
+  } catch (error) {
+    console.error("Error retrieving pending requests:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
-

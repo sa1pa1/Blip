@@ -6,6 +6,7 @@ const pool = require('./config/database');
 //ROUTES
 const userRoutes = require('./routes/userRoutes');
 const recipeRoutes = require('./routes/recipeRoutes');
+const connectionRoutes = require('./routes/connectionRoutes');
 
 //Express app setup
 const app = express();
@@ -42,6 +43,7 @@ app.get('/api/test-db', async (req, res) => {
 //API ROUTES
 app.use('/api/users', userRoutes);
 app.use('/api/recipes', recipeRoutes);
+app.use('/api/connections', connectionRoutes);
 
 //START SERVER
 app.listen(PORT, () => {

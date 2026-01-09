@@ -1,7 +1,7 @@
 const pool = require("../config/database");
 
 class Connection {
-  //send friend request
+  // Send friend request
   static async friendRequest(senderId, newConnection) {
     const query = `
         INSERT INTO connections (user_id, connected_user_id, status)
@@ -19,39 +19,38 @@ class Connection {
     }
   }
 
-  //Accept friend request and create bidirectional connection
+  // Accept friend request and create bidirectional connection
   static async acceptRequest(connectionId) {
     const client = await pool.connect();
 
     try {
       await client.query("BEGIN");
 
-      //1. Get pending contacts detail
+      // 1. Get pending connection details
       const getRequestQuery = `
             SELECT * FROM connections
-            WHERE id = $1 AND status = $2
+            WHERE id = $1 AND status = 'pending'
             `;
 
       const getRequestResult = await client.query(getRequestQuery, [
-        connectionId,
-        "pending",
+        connectionId
       ]);
 
       if (getRequestResult.rows.length === 0) {
         throw new Error("No pending connection found with the given ID");
       }
-      const connection = getRequestResultquery.rows[0];
+      const connection = getRequestResult.rows[0];
 
-      //2. Update original connection to accepted
+      // 2. Update original connection to accepted
       const updateRequestQuery = `
             UPDATE connections
-            SET status = 'accepted', 
+            SET status = 'accepted'
             WHERE id = $1
             RETURNING *`;
 
       await client.query(updateRequestQuery, [connectionId]);
 
-      //3. Create reverse connection (so both users are connected
+      // 3. Create reverse connection (so both users are connected)
       const BidirectionalConnectionQuery = `
             INSERT INTO connections (user_id, connected_user_id, status)
             VALUES ($1, $2, 'accepted')
@@ -73,8 +72,8 @@ class Connection {
     }
   }
 
-  //check if connection exists between two users
-  static async checkConnection(userId, connectedUserId) {
+  // Check if connection exists between two users
+  static async findConnection(userId, connectedUserId) {
     const query = `
         SELECT * FROM connections 
         WHERE (user_id = $1 AND connected_user_id = $2)
@@ -89,14 +88,14 @@ class Connection {
     }
   }
 
-  //get all friends
+  // Get all friends
   static async getFriends(userId) {
     const query = `
         SELECT c.*, u.username, u.full_name, u.profile_photo_url
         FROM connections c
         JOIN users u ON c.connected_user_id = u.id
         WHERE c.user_id = $1 AND c.status = 'accepted'
-        ORDER BY created_at DESC
+        ORDER BY c.created_at DESC
         `;
 
     try {
@@ -107,16 +106,13 @@ class Connection {
     }
   }
 
-  // find user 
-  
-
-  //get pending requests
+  // Get pending requests
   static async getPendingRequests(userId) {
     const query = `
         SELECT c.*, u.username, u.email, u.full_name
         FROM connections c 
-        JOIN USERS u on c.usr_id = u.id
-        WHERE c.conencted_user_id = $1 AND c.status = 'pending'
+        JOIN users u ON c.user_id = u.id
+        WHERE c.connected_user_id = $1 AND c.status = 'pending'
         ORDER BY c.created_at DESC
         `;
 
@@ -128,3 +124,5 @@ class Connection {
     }
   }
 }
+
+module.exports = Connection;

@@ -14,4 +14,4 @@ router.get('/friends/:userId', connectionController.getFriends);
 // Get pending requests
 router.get('/pending/:userId', connectionController.getPendingRequests);
 
-modules.exports = router;
+module.exports = router;
