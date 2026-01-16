@@ -54,6 +54,32 @@ exports.acceptRequest = async (req, res) => {
   }
 };
 
+//REJECT FRIEND REQUEST
+exports.rejectFriend = async (req, res) =>{
+  const {connectionId} = req.params;
+
+  try {
+    if (!connectionId){
+      return res.status(400).json({message: "Connection ID is required"});
+    }
+
+    const connection = await Connection.rejectFriend(connectionId);
+
+    res.status(200).json({
+      message: "Friend request rejected successfully",
+      connection,
+    });
+  } catch (error) {
+    console.error("Error rejecting friend request,", error);
+
+    if (error.message === "No pending connection found with the given ID"){
+      return res.status(404).json({message: error.message});
+    }
+
+    res.status(500).json({message: "Internal server error"});
+  }
+};
+
 // GET ALL FRIENDS
 exports.getFriends = async (req, res) => {
   const { userId } = req.params;

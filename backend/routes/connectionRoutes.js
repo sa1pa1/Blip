@@ -1,20 +1,23 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const connectionController = require('../controllers/connectionController');
+const connectionController = require("../controllers/connectionController");
 
 // Send friend request
-router.post('/', connectionController.friendRequest);
+router.post("/", connectionController.friendRequest);
 
 // Accept friend request
-router.put('/:connectionId/accept', connectionController.acceptRequest);
+router.put("/:connectionId/accept", connectionController.acceptRequest);
+
+// Reject friend request
+router.put("/:connectionId/reject", connectionController.rejectFriend);
 
 // Get all friends
-router.get('/friends/:userId', connectionController.getFriends);
+router.get("/friends/:userId", connectionController.getFriends);
 
 // Get pending requests
-router.get('/pending/:userId', connectionController.getPendingRequests);
+router.get("/pending/:userId", connectionController.getPendingRequests);
 
 // Remove friends
-router.delete('/:connectionId', connectionController.removeFriend);
+router.delete("/:connectionId", connectionController.removeFriend);
 
 module.exports = router;

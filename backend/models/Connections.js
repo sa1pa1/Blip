@@ -33,7 +33,7 @@ class Connection {
             `;
 
       const getRequestResult = await client.query(getRequestQuery, [
-        connectionId
+        connectionId,
       ]);
 
       if (getRequestResult.rows.length === 0) {
@@ -69,6 +69,27 @@ class Connection {
       throw error;
     } finally {
       client.release();
+    }
+  }
+
+  // Reject friend request
+  static async rejectFriend(connectionId) {
+    const query = `
+    DELETE FROM connections
+    WHERE id = $1 AND status = 'pending'
+    RETURNING *
+    `;
+
+    try {
+      const result = await pool.query(query, [connectionId]);
+
+      if (result.rows.length === 0) {
+        throw new Error("No pending connection with the given ID");
+      }
+
+      return result.rows[0];
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -127,23 +148,25 @@ class Connection {
   // Delete friend connection (bidirectional)
   static async deleteFriend(connectionId) {
     const client = await pool.connect();
-    
+
     try {
-      await client.query('BEGIN');
-      
+      await client.query("BEGIN");
+
       // 1. Get the connection details
-      const getQuery = 'SELECT * FROM connections WHERE id = $1';
+      const getQuery = "SELECT * FROM connections WHERE id = $1";
       const getResult = await client.query(getQuery, [connectionId]);
-      
+
       if (getResult.rows.length === 0) {
-        throw new Error('Connection not found');
+        throw new Error("Connection not found");
       }
-      
+
       const connection = getResult.rows[0];
-      
+
       // 2. Delete the original connection
-      await client.query('DELETE FROM connections WHERE id = $1', [connectionId]);
-      
+      await client.query("DELETE FROM connections WHERE id = $1", [
+        connectionId,
+      ]);
+
       // 3. Delete the reverse connection
       const reverseDeleteQuery = `
         DELETE FROM connections 
@@ -151,14 +174,13 @@ class Connection {
       `;
       await client.query(reverseDeleteQuery, [
         connection.connected_user_id,
-        connection.user_id
+        connection.user_id,
       ]);
-      
-      await client.query('COMMIT');
+
+      await client.query("COMMIT");
       return connection;
-      
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();

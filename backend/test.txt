@@ -11,15 +11,47 @@ Users:
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password123"}'
 
+--------------------------------------------------------------------------------------------------------
 
-Recipes: 
-1. Create a recipe: 
-    curl -X POST http://localhost:3000/api/recipes \
+
+TESTING reject and add friend
+# 1. USER 1 SENDS REQUEST TO USER 2
+curl -X POST http://localhost:3000/api/connections \
   -H "Content-Type: application/json" \
-  -d '{"userId":1,"title":"Sallys Pasta","originalSourceUrl":"https://example.com/pasta","modifications":"Added extra garlic and cream","notes":"Perfect for date night!","occasion":"Anniversary"}'
+  -d '{"userId": 1, "newConnectionId": 2}'
 
-2. Delete a recipe: 
-    curl -X DELETE http://localhost:3000/api/recipes/1 \
-    -H "Content-Type: application/json" \
-    -d '{"userId":1}'
+# 2. USER 2 CHECKS THEIR PENDING REQUESTS
+curl -X GET http://localhost:3000/api/connections/pending/2
 
+# 3a. USER 2 ACCEPTS (creates bidirectional friendship)
+curl -X PUT http://localhost:3000/api/connections/4/accept
+
+# OR
+
+# 3b. USER 2 REJECTS (deletes the request, no friendship created)
+curl -X PUT http://localhost:3000/api/connections/4/reject
+
+--------------------------------------------------------------------------------------------------------
+
+Deleting friend: 
+
+1. To find the connection ID to delete:
+# Get all friends for user 1
+curl -X GET http://localhost:3000/api/connections/friends/1
+
+2. Then delete using that ID:
+# using the connectionid 
+  "friends": [
+    {
+      "id": 2,  // <-- Use this ID to delete
+      "user_id": 1,
+      "connected_user_id": 2,
+      "status": "accepted",
+      "username": "testuser",
+      "full_name": "Test User",
+      "profile_photo_url": null,
+      "created_at": "2026-01-16T..."
+    }
+  ]
+
+  curl -X DELETE http://localhost:3000/api/connections/id
