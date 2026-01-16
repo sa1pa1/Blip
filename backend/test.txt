@@ -55,3 +55,7 @@ curl -X GET http://localhost:3000/api/connections/friends/1
   ]
 
   curl -X DELETE http://localhost:3000/api/connections/id
+
+--------------------------------------------------------------------------------------------------------
+
+RECIPES
