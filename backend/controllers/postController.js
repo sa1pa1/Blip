@@ -1,6 +1,6 @@
 const Post = require("../models/Post");
 const Tag = require("../models/Tag");
-const PostTag = require("../models/PostTag");
+const PostTag = require("../models/Posttag");
 
 // CREATE POST WITH TAGS (BE/US 3)
 exports.createPost = async (req, res) => {
