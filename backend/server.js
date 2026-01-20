@@ -7,6 +7,10 @@ const pool = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
 const recipeRoutes = require('./routes/recipeRoutes');
 const connectionRoutes = require('./routes/connectionRoutes');
+const postRoutes = require('./routes/postRoutes');
+const photoRoutes = require('./routes/photoRoutes');
+const sharedRecipeRoutes = require('./routes/sharedrecipeRoutes');
+const tagRoutes = require('./routes/tagRoutes');
 
 //Express app setup
 const app = express();
@@ -19,7 +23,7 @@ app.use(express.json());
 
 //API TEST ROUTE
 app.get('/', (req, res) => {
-  res.json({ message: 'Blip API is running!' });
+  res.json({ message: 'Byte API is running!' });
 });
 
 //DATABASE TEST ROUTE
@@ -44,6 +48,10 @@ app.get('/api/test-db', async (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/connections', connectionRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/photos', photoRoutes);
+app.use('/api/shared-recipes', sharedRecipeRoutes);
+app.use('/api/tags', tagRoutes);
 
 //START SERVER
 app.listen(PORT, () => {

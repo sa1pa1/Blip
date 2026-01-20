@@ -1,35 +1,27 @@
 const Recipe = require("../models/Recipe");
 
-// CREATE RECIPE
+// CREATE RECIPE (BE/US 1)
 exports.createRecipe = async (req, res) => {
   const {
     userId,
-    title,
-    OriginalSourceUrl,
-    OriginalRecipeText,
-    modifications,
-    notes,
-    cookedDate,
-    occasion,
+    recipeTitle,
+    fullName,
+    profile,
   } = req.body;
 
   try {
     // Validate required fields
-    if (!userId || !title) {
+    if (!userId || !recipeTitle) {
       return res
         .status(400)
-        .json({ message: "User ID and title are required" });
+        .json({ message: "User ID and recipe title are required" });
     }
 
     const recipe = await Recipe.create({
       userId,
-      title,
-      OriginalSourceUrl,
-      OriginalRecipeText,
-      modifications,
-      notes,
-      cookedDate,
-      occasion,
+      recipeTitle,
+      fullName,
+      profile,
     });
 
     res.status(201).json({
@@ -42,16 +34,49 @@ exports.createRecipe = async (req, res) => {
   }
 };
 
-//GET RECIPES BY USER ID
+// UPDATE RECIPE
+exports.updateRecipe = async (req, res) => {
+  const { id: recipeId } = req.params;
+  const { userId, recipeTitle, fullName, profile } = req.body;
+
+  try {
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const recipe = await Recipe.update(recipeId, userId, {
+      recipeTitle,
+      fullName,
+      profile,
+    });
+
+    if (!recipe) {
+      return res
+        .status(404)
+        .json({ message: "Recipe not found or unauthorized" });
+    }
+
+    res.status(200).json({
+      message: "Recipe updated successfully",
+      recipe,
+    });
+  } catch (error) {
+    console.error("Error updating recipe:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// GET RECIPES BY USER ID
 exports.getRecipesByUserId = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const recipe = await Recipe.findByuserID(userId);
+    const recipes = await Recipe.findByUserId(userId);
 
     res.status(200).json({
       message: "Recipes retrieved successfully",
-      recipes: recipe,
+      count: recipes.length,
+      recipes,
     });
   } catch (error) {
     console.error("Error retrieving recipes:", error);
@@ -59,19 +84,20 @@ exports.getRecipesByUserId = async (req, res) => {
   }
 };
 
-//GET RECIPE BY RECIPE ID
+// GET RECIPE BY RECIPE ID
 exports.getRecipeById = async (req, res) => {
   const { id: recipeId } = req.params;
 
   try {
-    const recipe = await Recipe.findbyID(recipeId);
+    const recipe = await Recipe.findById(recipeId);
 
     if (!recipe) {
       return res.status(404).json({ message: "Recipe not found" });
     }
+
     res.status(200).json({
       message: "Recipe retrieved successfully",
-      recipe: recipe,
+      recipe,
     });
   } catch (error) {
     console.error("Error retrieving recipe:", error);
@@ -79,10 +105,10 @@ exports.getRecipeById = async (req, res) => {
   }
 };
 
-//DELETE RECIPE
+// DELETE RECIPE
 exports.deleteRecipe = async (req, res) => {
   const { id: recipeId } = req.params;
-  const { userId } = req.body; //Assuming userId is sent in the request body for authentication
+  const { userId } = req.body;
 
   try {
     // Validate input
