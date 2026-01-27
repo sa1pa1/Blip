@@ -1,13 +1,13 @@
 # Byte 🌿
-### The private cooking social network
+### Take a Byte, get Bit
 
 <p align="center">
   <img src="byte.jpeg" alt="Byte Logo" width="300"/>
 </p>
 
 <p align="center">
-  <i>Not another recipe app. Not another social network.<br>
-  A place where cooking memories and recipe evolution live together.</i>
+  <i>Every homecook deserves an audience<br>
+  See if yu have what it takes</i>
 </p>
 
 ---
